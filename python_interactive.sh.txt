@@ -1,0 +1,56 @@
+# let's do gpio stuff with python!
+# very roughly following https://medium.com/uncommon-tech/making-iot-projects-scalable-with-kubernetes-a-raspberry-pi-tutorial-b2572c81bfaf
+#get all the code and install needed packages
+sudo apt-get install python3-pip
+pip install gpiozero flask
+git clone https://github.com/NamanGulati/PiKube
+cd PiKube
+
+# run the sketch
+python blink.py
+# turn blinking on
+curl localhost:5000/on
+# turn blinking off
+curl localhost:5000/off
+
+# now let's do it with docker!
+docker build -t pigpio .
+
+docker run -d --privileged --name pigpio -p 5000:5000 pigpio
+
+# turn blinking on
+curl localhost:5000/on
+# turn blinking off
+curl localhost:5000/off
+
+#stop for now
+docker kill pigpio
+
+# make some tweaks to the deployment (force it to use our local container)
+echo '
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- deployment-spec.yaml
+patchesJson6902:
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: pigpio-deployment
+  patch: |-
+   - op: replace
+     path: /spec/template/spec/containers/0/image
+     value: pigpio:latest
+   - op: add
+     path: /spec/template/spec/containers/0/imagePullPolicy
+     value: Never
+'> kustomization.yaml
+
+#deploy our code
+kubectl apply -k .
+
+# turn blinking on
+curl localhost:30000/on
+# turn blinking off
+curl localhost:30000/off

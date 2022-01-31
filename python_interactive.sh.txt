@@ -3,7 +3,7 @@
 #get all the code and install needed packages
 sudo apt-get install python3-pip
 pip install gpiozero flask
-git clone https://github.com/NamanGulati/PiKube
+git clone https://github.com/escardin/PiKube
 cd PiKube
 
 # run the sketch

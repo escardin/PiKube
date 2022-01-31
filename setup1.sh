@@ -1,9 +1,12 @@
 # enable needed cgroups
-echo ' cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1' |sudo tee -a /boot/cmdline.txt
+# mangle command line. Should probably match the defaults. Definitely doesn't match if you're not using raspbian lite
+echo "console=serial0,115200 console=tty1 root=PARTUUID=$(ls /dev/disk/by-partuuid|sort|tail -n 1) rootfstype=ext4 fsck.repair=yes rootwait cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1"|sudo tee /boot/cmdline.txt
+# just append. The params must be on one line, so the previous line might be more reliable
+#echo ' cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1' |sudo tee -a /boot/cmdline.txt
 
 #preconfigure docker
 sudo mkdir /etc/docker
-cat '
+echo '
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",

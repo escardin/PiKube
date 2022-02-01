@@ -1,13 +1,12 @@
 # let's do gpio stuff with python!
 # very roughly following https://medium.com/uncommon-tech/making-iot-projects-scalable-with-kubernetes-a-raspberry-pi-tutorial-b2572c81bfaf
-#get all the code and install needed packages
-sudo apt-get install python3-pip
-pip install gpiozero flask
-git clone https://github.com/escardin/PiKube
-cd PiKube
+# assuming we already have the code cloned
 
-# run the sketch
-python blink.py
+# install needed packages
+sudo apt-get install python3-flask
+
+# run the sketch (privileged because we need to meddle with the gpio pins)
+sudo python blink.py
 # turn blinking on
 curl localhost:5000/on
 # turn blinking off
@@ -25,6 +24,7 @@ curl localhost:5000/off
 
 #stop for now
 docker kill pigpio
+docker rm pigpio
 
 # make some tweaks to the deployment (force it to use our local container)
 echo '
